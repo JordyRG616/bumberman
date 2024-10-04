@@ -5,13 +5,11 @@ using UnityEngine;
 public class PlayerJump : MonoBehaviour
 {
     [SerializeField] private KeyCode key;
-    [SerializeField] private KeyCode altKey;
-    [SerializeField] private float chargeJump;
-    [SerializeField] private float jumpForce;
+    [SerializeField] private float jumpForce = 1.4f;
 
+    private float effectiveJumpForce;
     private Rigidbody2D body;
     private bool jumping;
-    private float effectiveJumpForce;
 
 
     void Start()
@@ -23,26 +21,27 @@ public class PlayerJump : MonoBehaviour
     {
         if(jumping) return;
 
-        if(Input.GetKey(key) || Input.GetKey(altKey))
+        if(Input.GetKey(key))
         {
-            effectiveJumpForce += Time.deltaTime * chargeJump;
+            effectiveJumpForce += Time.deltaTime * 100;
         }
 
-        if(Input.GetKeyUp(key) || Input.GetKeyUp(altKey))
+        if(Input.GetKeyUp(key))
         {
-            var force = Mathf.Min(effectiveJumpForce, jumpForce);
-            body.AddForce(Vector2.up * force, ForceMode2D.Impulse);
-            effectiveJumpForce = 0;
+            Jump();
         }
     }
 
-    void OnCollisionExit2D(Collision2D other)
+    private void Jump()
     {
-        jumping = true;        
+        var force = Mathf.Min(jumpForce, effectiveJumpForce);
+        body.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+        jumping = true;
+        effectiveJumpForce = 0;
     }
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        jumping = false;        
+        jumping = false;
     }
 }
