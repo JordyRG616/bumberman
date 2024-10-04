@@ -6,6 +6,7 @@ using UnityEngine;
 public class Spike : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private string sceneName;
 
     private Vector3 initialPos;
 
@@ -17,25 +18,43 @@ public class Spike : MonoBehaviour
 
     void Update()
     {
-        transform.position += Vector3.left * speed * Time.deltaTime;        
-    }
-
-    void OnBecameInvisible()
-    {
-        transform.position = initialPos;
+        transform.position += Vector3.left * speed * Time.deltaTime;
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
         Time.timeScale = 0;
-
-        Invoke("ResetGame", 1f);
-        ResetGame();
+        StartCoroutine(ResetGame());
     }
 
-    private void ResetGame()
+    private IEnumerator ResetGame()
     {
-        SceneManager.LoadScene("New Scene");
+        float time = 0;
+
+        while(time < 1)
+        {
+            time += 0.01f;
+            yield return new WaitForSecondsRealtime(0.01f);
+        }
+
+        SceneManager.LoadScene(sceneName);
         Time.timeScale = 1;
     }
+
+    void OnBecameInvisible()
+    {
+        transform.position = initialPos;
+        Metodo(10);
+    }
+
+    void OnJointBreak2D(Joint2D brokenJoint)
+    {
+        Application.Quit();
+    }
+
+    private void Metodo(int param = 5)
+    {
+
+    }
 }
+ 
